@@ -36,5 +36,4 @@ jobs:
         run: npm run lint
 
       # Send a console message at completion.
-      - run: |
-            "Hello ${{ github.actor }}. You pushed to ${{ github.repository }} at ${{ github.event.head_commit.timestamp }}."
+      - run: echo "Hello ${{ github.actor }}. You pushed to ${{ github.repository }} at ${{ github.event.head_commit.timestamp }}."
