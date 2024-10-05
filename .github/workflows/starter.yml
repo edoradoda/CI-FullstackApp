@@ -1,8 +1,8 @@
 name: nodejs-starter
 # Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
 on:
-    schedule:
-        - cron: '0 0 * * 0'
+    # schedule:
+    #     - cron: '0 0 * * 0'
     push:
         branches:
         - main
