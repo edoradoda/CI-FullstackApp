@@ -48,7 +48,4 @@ jobs: # Jobs defined in the workflow
     
     - name: show s3 bucket files
       run: |
-        aws cloudformation describe-stacks \ 
-          --stack-name udatest \
-          --query "Stacks[0].Outputs[?OutputKey=='ArtifactBucketWebsiteURL'].OutputValue" \
-          --output text
+        aws cloudformation describe-stacks --stack-name udatest --query "Stacks[0].Outputs[?OutputKey=='ArtifactBucketWebsiteURL'].OutputValue" --output text
