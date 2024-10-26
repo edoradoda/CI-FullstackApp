@@ -38,6 +38,11 @@ jobs: # Jobs defined in the workflow
         template: udatest.yml
         no-fail-on-empty-changeset: "1"
     
+    - name: List files
+      run: ls -R
+    - name: List files 2
+      run: ls -lt ./*
+    
     - name: Upload files to s3 bucket
       run: |
         aws s3 cp ./website/${{github.event.inputs.index_document}} s3://${{env.BUCKET_NAME}}
