@@ -15,7 +15,7 @@ on:
         required: true
         default: 'error.html'
 env:
-  BUCKET_NAME: 'website-artifacts'
+  BUCKET_NAME: 'uda-iye-bucket'
 jobs: # Jobs defined in the workflow
   create-stack:
     runs-on: ubuntu-latest
