@@ -5,6 +5,17 @@ name: create-cloudformation-stack
 on:
   # Manual trigger using the workflow_dispatch event
   workflow_dispatch:
+    inputs:
+      index_document:
+        description: 'Name of the index document'
+        required: true
+        default: 'index.html'
+      error_document:
+        description: 'Name of the error document'
+        required: true
+        default: 'error.html'
+env:
+  BUCKET_NAME: 'website-artifacts'
 jobs: # Jobs defined in the workflow
   create-stack:
     runs-on: ubuntu-latest
@@ -26,3 +37,15 @@ jobs: # Jobs defined in the workflow
         name: udatest
         template: udatest.yml
         no-fail-on-empty-changeset: "1"
+    
+    - name: Upload files to s3 bucket
+      run: |
+        aws s3 cp ./website/${{github.event.inputs.index_document}} s3://${{env.BUCKET_NAME}}
+        aws s3 cp ./website/${{github.event.inputs.error_document}} s3://${{env.BUCKET_NAME}}
+    
+    - name: Upload files to s3 bucket
+      run: |
+        aws cloudformation describe-stacks \ 
+          --stack-name udatest \
+          --query "Stacks[0].Outputs[?OutputKey=='WebsiteURL'].OutputValue" \
+          --output text
