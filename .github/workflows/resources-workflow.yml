@@ -40,17 +40,15 @@ jobs: # Jobs defined in the workflow
     
     - name: List files
       run: ls -R
-    - name: List files 2
-      run: ls -lt ./*
     
     - name: Upload files to s3 bucket
       run: |
         aws s3 cp ./${{github.event.inputs.index_document}} s3://${{env.BUCKET_NAME}}
         aws s3 cp ./${{github.event.inputs.error_document}} s3://${{env.BUCKET_NAME}}
     
-    - name: Upload files to s3 bucket
+    - name: show s3 bucket files
       run: |
         aws cloudformation describe-stacks \ 
           --stack-name udatest \
-          --query "Stacks[0].Outputs[?OutputKey=='WebsiteURL'].OutputValue" \
+          --query "Stacks[0].Outputs[?OutputKey=='ArtifactBucketWebsiteURL'].OutputValue" \
           --output text
