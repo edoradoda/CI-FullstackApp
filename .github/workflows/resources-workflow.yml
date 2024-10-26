@@ -45,8 +45,8 @@ jobs: # Jobs defined in the workflow
     
     - name: Upload files to s3 bucket
       run: |
-        aws s3 cp ./website/${{github.event.inputs.index_document}} s3://${{env.BUCKET_NAME}}
-        aws s3 cp ./website/${{github.event.inputs.error_document}} s3://${{env.BUCKET_NAME}}
+        aws s3 cp ./${{github.event.inputs.index_document}} s3://${{env.BUCKET_NAME}}
+        aws s3 cp ./${{github.event.inputs.error_document}} s3://${{env.BUCKET_NAME}}
     
     - name: Upload files to s3 bucket
       run: |
