@@ -1,0 +1,35 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - release/*
+
+env:
+  RELEASE_NAME: ${GITHUB_REF##*release/}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up NodeJS
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm install -g serverless
+
+    - name: Deploy to AWS Lambda using Serverless Framework
+      run: | 
+        RELEASE_NAME=${GITHUB_REF##*release/}
+        serverless deploy --stage=${RELEASE_NAME}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

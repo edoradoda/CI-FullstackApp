@@ -1,0 +1,73 @@
+name: 'Terraform Blue-Green Deployment'
+on:
+  push:
+    branches:
+      - main
+
+env:
+  TF_ACTION_WORKING_DIR: 'terraform' 
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
+
+    steps:
+    # Check out the code to the runner
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+        aws-region: us-east-1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Initialize
+      run: terraform init
+
+    - name: Terraform Validate
+      run: terraform validate 
+
+    - name: Terraform Plan
+      run: terraform plan 
+      continue-on-error: true
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve
+
+      # Set up the specified version of Terraform
+      # Initialize your Terraform configuration
+      # Validate your Terraform configuration
+      # Generate and display an execution plan
+      # Apply the changes required to reach the desired state of the configuration
+
+    # Check the status of the Blue environment
+    - name: Check status of Blue Environment
+      id: blue_status
+      run: echo "::set-output name=status::$(terraform output -raw blue_status)"
+
+    # Check the status of the Green environment
+    - name: Check status of Green Environment
+      id: green_status
+      run: echo "::set-output name=status::$(terraform output -raw green_status)"
+
+    # Switch traffic to the Green environment if the Blue environment is currently live
+    - name: Switch traffic to Green if Blue is currently live
+      if: steps.blue_status.outputs.status == 'live'
+      run: |
+        terraform apply -var='live_environment=green' -auto-approve
+        echo "Switched live traffic to Green environment"
+
+    # Switch traffic to the Blue environment if the Green environment is currently live
+    - name: Switch traffic to Blue if Green is currently live
+      if: steps.green_status.outputs.status == 'live'
+      run: |
+        terraform apply -var='live_environment=blue' -auto-approve
+        echo "Switched live traffic to Blue environment"
