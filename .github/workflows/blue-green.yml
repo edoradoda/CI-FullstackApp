@@ -65,7 +65,7 @@ jobs:
         terraform apply -var='live_environment=green' -auto-approve
         echo "Switched live traffic to Green environment"
 
-    # Switch traffic to the Blue environment if the Green environment is currently live ..
+    # Switch traffic to the Blue environment if the Green environment is currently live 
     - name: Switch traffic to Blue if Green is currently live
       if: steps.green_status.outputs.status == 'live'
       run: |
